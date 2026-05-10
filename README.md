@@ -59,8 +59,10 @@ To improve security, the admin password is stored in encrypted form using the XO
 
 ## 📂 Project Structure
 
-SecureVotingSystem.asm
-README.md
+- SecureVotingSystem.asm
+
+- README.md
+
 ---
 
 ## 🎥 Demo Video

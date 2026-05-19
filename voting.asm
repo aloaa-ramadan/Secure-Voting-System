@@ -42,13 +42,9 @@ passMsg   db 13,10,'Enter Admin Password: $'
 wrongMsg  db 13,10,'Wrong Password!$'
 
 encKey    db 55h
-adminPass db 64h,67h,66h,61h ;1 xor enckey
+adminPass db 64h,67h,66h,61h ;1=31h xor enckey
 ;adminPass db '1','2','3','4'
 password_input db 4 dup(0)
-;******************************************************************
-startSecond db 0
-timerFlag  db 0   
-closedMsg  db 13,10,'Voting time finished!$'
 ;******************************************************************
 
 .code
@@ -88,9 +84,9 @@ continue_vote:
     int 21h
     mov bl,al ;enter id 
 
-    ; check duplicate
+    ;prepare 
     mov si,0    ;si pointer to array 
-    mov cl,voteCount
+    mov cl,voteCount ;cx=no. counts
     mov ch,0
 
 
@@ -111,7 +107,7 @@ duplicate_vote:
     lea dx,duplicateMsg
     mov ah,9
     int 21h  
-    jmp start
+    jmp continue_vote
 
 not_duplicate:
     
@@ -122,8 +118,7 @@ not_duplicate:
     inc voteCount
 
 
-   cand_loop:
-
+cand_loop:
     lea dx, candMsg
     mov ah,9
     int 21h
@@ -136,8 +131,7 @@ not_duplicate:
 
     cmp al,'2'
     je vote_sarah
-
-    ; 
+ 
     lea dx, wrongChoiceMsg
     mov ah,9
     int 21h

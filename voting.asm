@@ -40,7 +40,10 @@ drawMsg   db 13,10,'* It is a Draw *',13,10,'$'
 ;Admin Password
 passMsg   db 13,10,'Enter Admin Password: $'
 wrongMsg  db 13,10,'Wrong Password!$'
-adminPass db '1','2','3','4'
+
+encKey    db 55h
+adminPass db 64h,67h,66h,61h ;1 xor enckey
+;adminPass db '1','2','3','4'
 password_input db 4 dup(0)
 ;******************************************************************
 startSecond db 0
@@ -134,7 +137,7 @@ not_duplicate:
     cmp al,'2'
     je vote_sarah
 
-    ; ?? ??? ???? ???
+    ; 
     lea dx, wrongChoiceMsg
     mov ah,9
     int 21h
@@ -172,7 +175,8 @@ password_loop:
 read_pass:
     mov ah,8
     int 21h
-
+     
+    xor al,encKey
     mov password_input[si],al
 
     mov dl,'*'

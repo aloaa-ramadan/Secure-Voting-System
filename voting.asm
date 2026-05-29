@@ -44,7 +44,8 @@ wrongMsg  db 13,10,'Wrong Password!$'
 encKey    db 55h
 adminPass db 64h,67h,66h,61h ;1=31h xor enckey
 ;adminPass db '1','2','3','4'
-password_input db 4 dup(0)
+password_input db 4 dup(0)  
+attemptsMsg  db 13,10,'Attempts remaining: $'
 ;******************************************************************
 
 .code
@@ -155,15 +156,25 @@ vote_done:
 ;******************************************************************
 admin_module:
 
-    mov cx,3              ; 3 attempts
+    mov cx,3              ; 3 try   
+      
 
-password_loop:
+password_loop:  
+
+    lea dx,attemptsMsg
+    mov ah,9
+    int 21h
+
+    mov dl,cl      
+    add dl,'0'    
+    mov ah,2
+    int 21h
 
     lea dx,passMsg
     mov ah,9
     int 21h
 
-    ; ===== read 4-digit password =====
+    ; read 4 digit password
     mov si,0
 
 read_pass:
@@ -179,11 +190,13 @@ read_pass:
 
     inc si
     cmp si,4
-    jne read_pass
-    ; ===== compare =====
+    jne read_pass 
+    
+    ; compare
     mov si,0
 
-check_pass:
+check_pass:    
+
     mov al,password_input[si]
     cmp al,adminPass[si]
     jne wrong_password
@@ -198,12 +211,13 @@ wrong_password:
     mov ah,9
     int 21h
     loop password_loop
+     ;if cx=0 go to start
     jmp start
 
 
 correct_password:
 
-    ; ===== Results =====
+    ;  Results 
     lea dx,resultsMsg
     mov ah,9
     int 21h
@@ -227,14 +241,14 @@ correct_password:
     int 21h
     
 
-    ; ===== Winner Check =====
+    ;  Winner Check 
     lea dx,winnerMsg
     mov ah,9
     int 21h
 
     mov al, AlaaVotes
     mov bl, sarahVotes
-
+     
     cmp al, bl
     jg Alaa_wins
     jl sarah_wins
@@ -261,5 +275,6 @@ exit_program:
     mov ah,4ch
     int 21h
 
-main endp
+main endp 
+
 end main
